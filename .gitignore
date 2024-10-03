@@ -1,0 +1,32 @@
+# Ignore Python compiled files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environment directory
+venv/
+ENV/
+env/
+.venv/
+
+# Ignore CadQuery temporary and cache files
+*.step
+*.stl
+*.png
+*.svg
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# Ignore settings and configuration files
+.vscode/
+.idea/
+
+# Ignore test and coverage files
+.tox/
+.coverage
+coverage.xml
