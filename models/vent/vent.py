@@ -2,7 +2,7 @@
 
 import cadquery as cq
 from utils.util_functions import load_csv_points, export_stl
-from utils.geometric_functions import hexagon, hex_lattice
+from utils.hexagon_lattice import hexagon, hex_lattice
 import logging
 
 logging.basicConfig(
@@ -41,11 +41,11 @@ def get_vent():
 
     vent = vent.union(top_shape)
 
-    for point in hex_lattice(layers=8):
-
+    lattice = hex_lattice((0,0), 5, 10)
+    for point in lattice:
         logging.info(f"Creating hexagon at {point}")
-        hex = hexagon(point, 5).extrude(10)
-        vent = vent.cut(hex)
+        hex = hexagon(point, 4, 30).extrude(10)
+        vent = vent.cut(hex) 
 
     return vent
 
