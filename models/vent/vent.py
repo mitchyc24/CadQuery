@@ -1,7 +1,18 @@
 # models/python/vent/vent.py
 
 import cadquery as cq
-from utils.functions import load_csv_points, export_stl
+from utils.util_functions import load_csv_points, export_stl
+from utils.geometric_functions import hexagon, distribute_points
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("vent.log"),
+        logging.StreamHandler()
+    ]
+)
 
 def get_vent():
     """
@@ -28,9 +39,12 @@ def get_vent():
     top_profile = cq.Workplane("XY").polyline(points).close().offset2D(10).transformed(offset=(0,0,10))
     top_shape = top_profile.extrude(2)
 
-
     vent = vent.union(top_shape)
 
+    for point in distribute_points(10, 10):
+        logging.debug(f"Creating hexagon at {point}")
+        hex = hexagon(point, 8).extrude(10)
+        vent = vent.cut(hex)
 
     return vent
 
