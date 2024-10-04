@@ -2,11 +2,11 @@
 
 import cadquery as cq
 from utils.util_functions import load_csv_points, export_stl
-from utils.geometric_functions import hexagon, distribute_points
+from utils.geometric_functions import hexagon, hex_lattice
 import logging
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.FileHandler("vent.log"),
@@ -41,9 +41,10 @@ def get_vent():
 
     vent = vent.union(top_shape)
 
-    for point in distribute_points(10, 10):
-        logging.debug(f"Creating hexagon at {point}")
-        hex = hexagon(point, 8).extrude(10)
+    for point in hex_lattice(layers=8):
+
+        logging.info(f"Creating hexagon at {point}")
+        hex = hexagon(point, 5).extrude(10)
         vent = vent.cut(hex)
 
     return vent
