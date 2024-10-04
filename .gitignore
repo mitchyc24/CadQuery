@@ -30,3 +30,6 @@ Thumbs.db
 .tox/
 .coverage
 coverage.xml
+
+# Ignore generated files in stl_files directory
+stl_files/
