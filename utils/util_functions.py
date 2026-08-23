@@ -120,34 +120,33 @@ def load_csv_points(relative_path):
                 continue  # Skip lines with non-float values
     return points
 
-def export_stl(model, relative_path):
+def export_stl(model, filename):
     """
-    Exports a CadQuery model to an STL file located at a path relative to the configured STL output directory.
-    
-    Args:
+    Export a CadQuery model to an STL file.
+
+    Parameters:
         model (cq.Workplane): The CadQuery model to export.
-        relative_path (str): Relative path within the STL output directory.
-    
-    Raises:
-        Exception: If exporting fails.
+        filename (str): The name of the output STL file.
     """
-    config = load_config()
-    stl_output_dir = Path(config['Paths']['stl_output_dir'])
-    
-    # Ensure stl_output_dir is relative to project root
-    project_root = get_project_root()
-    stl_output_path = (project_root / stl_output_dir).resolve()
-    
-    # Construct the absolute path for the STL file
-    stl_path = (stl_output_path / relative_path).resolve()
-    stl_dir = stl_path.parent
-    
-    # Create the directory if it doesn't exist
-    stl_dir.mkdir(parents=True, exist_ok=True)
-    
     try:
-        cq.exporters.export(model, str(stl_path))
-        logging.info(f"STL file successfully exported to '{stl_path}'.")
+        # Get the directory of the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Navigate up one level to the project root
+        project_root = os.path.dirname(script_dir)
+        
+        # Define the output directory
+        output_dir = os.path.join(project_root, 'stl_files')
+        
+        # Create the output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Create the full path for the output file
+        output_path = os.path.join(output_dir, filename)
+        
+        # Export the model to STL
+        cq.exporters.export(model, output_path)
+        print(f"STL file successfully exported to '{output_path}'.")
     except Exception as e:
-        logging.error(f"Failed to export STL file: {e}")
-        raise Exception(f"Failed to export STL file: {e}")
+        print(f"Failed to export STL file: {e}")
+        raise

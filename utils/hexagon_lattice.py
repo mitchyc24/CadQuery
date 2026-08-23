@@ -13,6 +13,7 @@ def hexagon(center, radius, rotation=0):
     
     Returns:
     - A CadQuery Workplane object representing the hexagon.
+
     """
     x, y = center
     angle_rad = math.radians(rotation)
