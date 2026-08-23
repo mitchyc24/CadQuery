@@ -17,6 +17,10 @@ ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = '''import cadquery as cq
 from cqlib.io_utils import export_stl
 
+# Live 3D preview: install the "OCP CAD Viewer" VS Code extension, then
+# uncomment the two ocp_vscode lines below and run this file to see updates live.
+# from ocp_vscode import show
+
 
 def build() -> cq.Workplane:
     """Build the {name} model."""
@@ -25,7 +29,9 @@ def build() -> cq.Workplane:
 
 
 if __name__ == "__main__":
-    export_stl(build(), "{name}.stl")
+    model = build()
+    # show(model)
+    export_stl(model, "{name}.stl")
 '''
 
 

@@ -26,11 +26,26 @@ CadQuery/
 
 ## Setup
 
-```powershell
-python -m venv venv
-venv\Scripts\activate
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+## Live 3D preview while designing
+
+Install the **OCP CAD Viewer** extension in VS Code (search the Extensions marketplace for `bernhard-42.ocp-cad-viewer`). It adds a 3D viewer panel that updates whenever you run a script containing a `show(...)` call.
+
+In the model file you're actively working on:
+
+```python
+from ocp_vscode import show
+
+# ... build your model ...
+show(model)
+```
+
+Then run the file with **Run > Run Without Debugging** (`Ctrl+F5`) — the viewer panel opens automatically and refreshes each time you re-run. `scripts/new_model.py` scaffolds new models with this import commented out, ready to enable.
 
 ## Workflow: designing a model and generating an STL
 
