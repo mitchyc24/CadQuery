@@ -1,8 +1,8 @@
 # models/python/vent/vent.py
 
 import cadquery as cq
-from utils.util_functions import load_csv_points, export_stl
-from utils.hexagon_lattice import hexagon, hex_lattice
+from cqlib.io_utils import load_csv_points, export_stl
+from cqlib.hexagon_lattice import hexagon, hex_lattice
 import logging
 
 logging.basicConfig(
@@ -21,8 +21,8 @@ def get_vent():
     Returns:
         cq.Workplane: The generated vent model.
     """
-    # Load points from 'points.csv' located in the same directory as vent.py
-    points = load_csv_points('points.csv')
+    # Load points from 'vent_points.csv' located in the same directory as vent.py
+    points = load_csv_points('vent_points.csv')
    
     if not points:
         print("No points found. Vent model cannot be created.")

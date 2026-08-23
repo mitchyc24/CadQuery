@@ -1,6 +1,6 @@
 import math
 import cadquery as cq
-from utils.util_functions import export_stl
+from cqlib.io_utils import export_stl
 
 class KeyHolder:
     """

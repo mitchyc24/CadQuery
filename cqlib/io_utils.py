@@ -1,5 +1,4 @@
 import csv
-import os
 import inspect
 import configparser
 from pathlib import Path
@@ -15,24 +14,23 @@ logging.basicConfig(
     ]
 )
 
+# cqlib/ always lives directly under the project root
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 def get_caller_directory():
     """
-    Retrieves the directory of the original caller script.
+    Retrieves the directory of the script that called into this module (used to resolve
+    paths like CSVs relative to the calling model script, not this library file).
     
     Returns:
         Path: Absolute path to the caller's directory.
     """
     stack = inspect.stack()
-    logging.debug(f"Stack: {stack}")
     try:
-        # Ensure the stack has enough frames
+        # Frame 0: get_caller_directory, frame 1: the function in this module that
+        # called us (e.g. load_csv_points), frame 2: the original external caller.
         if len(stack) < 3:
-            # Fallback to functions.py directory if stack is not deep enough
             return Path(__file__).parent.resolve()
-        
-        # Frame 0: get_caller_directory
-        # Frame 1: load_csv
-        # Frame 2: (original caller)
         caller_frame = stack[2]
         caller_file = caller_frame.filename
         caller_dir = Path(caller_file).parent.resolve()
@@ -40,24 +38,6 @@ def get_caller_directory():
     finally:
         # Clean up to prevent reference cycles
         del stack
-
-def get_project_root():
-    """
-    Finds the project root directory by locating 'config.ini'.
-    
-    Returns:
-        Path: Absolute path to the project root.
-    
-    Raises:
-        FileNotFoundError: If 'config.ini' is not found in any parent directories.
-    """
-    caller_dir = get_caller_directory()
-    current_dir = caller_dir
-    while current_dir != current_dir.parent:
-        if (current_dir / 'config.ini').is_file():
-            return current_dir
-        current_dir = current_dir.parent
-    raise FileNotFoundError("Could not find 'config.ini' in any parent directories.")
 
 def load_config():
     """
@@ -67,15 +47,10 @@ def load_config():
         configparser.ConfigParser: The loaded configuration object.
     
     Raises:
-        FileNotFoundError: If 'config.ini' is not found.
         KeyError: If required configuration keys are missing.
-        configparser.Error: If there's an error parsing the configuration.
     """
-    project_root = get_project_root()
-    config_path = project_root / 'config.ini'
-    
     config = configparser.ConfigParser()
-    config.read(config_path)
+    config.read(PROJECT_ROOT / 'config.ini')
     
     if 'Paths' not in config or 'stl_output_dir' not in config['Paths']:
         raise KeyError("Configuration file is missing 'stl_output_dir' under 'Paths' section.")
@@ -122,30 +97,19 @@ def load_csv_points(relative_path):
 
 def export_stl(model, filename):
     """
-    Export a CadQuery model to an STL file.
+    Export a CadQuery model to an STL file in the directory configured by
+    'stl_output_dir' in config.ini (relative to the project root).
 
     Parameters:
         model (cq.Workplane): The CadQuery model to export.
         filename (str): The name of the output STL file.
     """
     try:
-        # Get the directory of the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Navigate up one level to the project root
-        project_root = os.path.dirname(script_dir)
-        
-        # Define the output directory
-        output_dir = os.path.join(project_root, 'stl_files')
-        
-        # Create the output directory if it doesn't exist
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Create the full path for the output file
-        output_path = os.path.join(output_dir, filename)
-        
-        # Export the model to STL
-        cq.exporters.export(model, output_path)
+        config = load_config()
+        output_dir = PROJECT_ROOT / config['Paths']['stl_output_dir']
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / filename
+        cq.exporters.export(model, str(output_path))
         print(f"STL file successfully exported to '{output_path}'.")
     except Exception as e:
         print(f"Failed to export STL file: {e}")

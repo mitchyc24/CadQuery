@@ -1,4 +1,5 @@
 import cadquery as cq
+from cqlib.io_utils import export_stl
 
 
 def points2skirt(points: tuple, length: int, thickness: int) -> cq.Workplane:
@@ -20,9 +21,7 @@ def points2skirt(points: tuple, length: int, thickness: int) -> cq.Workplane:
 
     # Subtract the inner profile from the outer profile to create the skirt
     skirt = outside.cut(inside)
-    
 
-    cq.exporters.export(skirt, 'stl/skirt.stl')
     return skirt
 
 
@@ -52,4 +51,5 @@ if __name__ == "__main__":
 
     scale_factor = 6.35
     points = [(x*scale_factor, y*scale_factor) for x, y in points]
-    points2skirt(points, 20, 2)
+    skirt = points2skirt(points, 20, 2)
+    export_stl(skirt, 'skirt.stl')

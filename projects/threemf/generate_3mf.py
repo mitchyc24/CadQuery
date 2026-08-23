@@ -76,8 +76,9 @@ def write_object_xml(vertices, faces, unit="millimeter"):
 
 
 if __name__ == "__main__":
+    from pathlib import Path
+    from projects.threemf.shapes.sphere import generate_sphere
 
-    from shapes.sphere import generate_sphere
     # Generate geometry
     x, y, z = generate_sphere(radius=1, u_steps=20, v_steps=20)
 
@@ -87,8 +88,11 @@ if __name__ == "__main__":
     # Write XML
     object_xml = write_object_xml(vertices, faces)
 
-    # Save to file or print
-    with open('sphere.xml', 'w') as f:
+    # Save to the shared build output directory
+    output_dir = Path(__file__).resolve().parent.parent.parent / 'build' / '3mf'
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / 'sphere.xml'
+    with open(output_path, 'w') as f:
         f.write(object_xml)
 
-    print("object.xml file has been generated.")
+    print(f"{output_path} has been generated.")

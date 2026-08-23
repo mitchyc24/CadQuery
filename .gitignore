@@ -31,5 +31,5 @@ Thumbs.db
 .coverage
 coverage.xml
 
-# Ignore generated files in stl_files directory
-stl_files/
+# Ignore all generated build output (STL, 3MF, etc.)
+build/

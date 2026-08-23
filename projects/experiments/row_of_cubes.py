@@ -1,5 +1,5 @@
 import cadquery as cq
-from utils.util_functions import load_csv_points, export_stl
+from cqlib.io_utils import load_csv_points, export_stl
 
 def get_cubes():
     """
